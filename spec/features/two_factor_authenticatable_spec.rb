@@ -93,6 +93,14 @@ feature "User of two factor authentication" do
       expect(page).to have_content("You are signed out")
     end
 
+    scenario "does not send codes after max attempts" do
+      user.update_attribute(:second_factor_attempts_count, User.max_login_attempts)
+
+      visit user_two_factor_authentication_path
+
+      expect(SMSProvider.messages).to be_empty
+    end
+
     scenario "cannot retry authentication after max attempts" do
       user.update_attribute(:second_factor_attempts_count, User.max_login_attempts)
 
